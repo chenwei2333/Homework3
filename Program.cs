@@ -2,14 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-namespace _3_1
+namespace _3_2
 {
-    class Rectangle
+    class Product
+    {
+        public void MethodSame() { }
+        public void MethodDiff() { }
+        public double GetArea() { return 0; }
+    }
+    class ConcreteProductA : Product
     {
         public double width;
         public double height;
-        public Rectangle(double len, double wid)
+        public ConcreteProductA(double len, double wid) 
         {
             height = len;
             width = wid;
@@ -26,22 +33,12 @@ namespace _3_1
         {
             return height > 0 && width > 0;
         }
-        public double Display()
-        {
-            if (Islegal())
-            {
-                Console.WriteLine("面积为:" + GetArea());
-            }
-            else
-            {
-                Console.WriteLine("不合法！");
-            }
-        }
     }
-    class Square
+    class ConcreteProductB : Product
     {
+        //实现业务方法
         public double side;
-        public Square(double val)  // 参数化构造函数
+        public ConcreteProductB(double val)  
         {
             side = val;
         }
@@ -57,20 +54,10 @@ namespace _3_1
         {
             return side > 0;
         }
-        public double Display()
-        {
-            if (Islegal())
-            {
-                Console.WriteLine("面积为:" + GetArea());
-            }
-            else
-            {
-                Console.WriteLine("不合法！");
-            }
-        }
     }
-    class Triangle
+    class ConcreteProductC : Product
     {
+        //实现业务方法
         public double side1;
         public double side2;
         public double side3;
@@ -94,15 +81,76 @@ namespace _3_1
         {
             return side1 + side2 > side3 && side1 + side3 > side2 && side2 + side3 > side1 && side1 > 0 && side2 > 0 && side3 > 0;
         }
-        public double Display()
+    }
+    class Factory
+    {
+        //静态工厂方法
+        public static Product GetProduct(String arg)
         {
-            if (Islegal())
+            Product product = null;
+            if (arg == "A")
             {
-                Console.WriteLine("面积为:" + GetArea());
+                Random ran1 = new Random();
+                int n = ran1.Next(10);
+                Random ran2 = new Random();
+                int m = ran2.Next(10);
+                product = new ConcreteProductA(n, m);
+                //初始化设置product
             }
-            else
+            else if (arg == "B")
             {
-                Console.WriteLine("不合法！");
+                Random ran1 = new Random();
+                int n = ran1.Next(10);
+                product = new ConcreteProductB(n);
+                //初始化设置product
             }
+            else if (arg == "C")
+            {
+                Random ran1 = new Random();
+                int n = ran1.Next(10);
+                Random ran2 = new Random();
+                int m = ran2.Next(10);
+                Random ran3 = new Random();
+                int l = ran3.Next(10);
+                product = new ConcreteProductC(n, m, l);
+                
+            }
+            return product;
         }
     }
+    class Client
+    {
+        public static void Main(String[] args)
+        {
+            double area = 0;
+            for (int i = 0; i < 10; i++)
+            {
+                Random ran = new Random();
+                int n = ran.Next(100);
+                Thread.Sleep(12);
+                if (n % 3 == 0)
+                {
+                    ConcreteProductA product;
+                    product = (ConcreteProductA)Factory.GetProduct("A");
+                    Console.WriteLine("产生了一个长方形，面积为" + product.GetArea());
+                    area += product.GetArea();
+                }
+                if (n % 3 == 1)
+                {
+                    ConcreteProductB product;
+                    product = (ConcreteProductB)Factory.GetProduct("B");
+                    Console.WriteLine("产生了一个正方形，面积为" + product.GetArea());
+                    area += product.GetArea();
+                }
+                if (n % 3 == 2)
+                {
+                    ConcreteProductC product;
+                    product = (ConcreteProductC)Factory.GetProduct("C");
+                    Console.WriteLine("产生了一个三角形，面积为" + product.GetArea());
+                    area += product.GetArea();
+                }
+            }
+            Console.WriteLine("总面积为：" + area);
+        }
+    }
+}
